@@ -1,0 +1,6 @@
+{
+  "name": "Box News 3D Earth",
+  "description": "A premium, high-fidelity 3D interactive Earth globe designed for Box News, featuring cinematic atmosphere, clouds, stars, and real-time lighting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
