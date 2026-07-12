@@ -1,5 +1,5 @@
 /**
- * Seed roster for the NnSense Comic Universe.
+ * Seed roster for the BoxNewsBooster Comic Universe.
  *
  * Each entry is a "spark" — a short creative brief plus a ready-to-use
  * text-to-image prompt. These are not final art; they are the starting

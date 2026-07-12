@@ -1,6 +1,6 @@
 {
-  "name": "NnSense Comic Globe",
-  "description": "A premium, high-fidelity 3D interactive Earth globe designed for NnSense, wrapped in a hand-drawn comic-book cast instead of a map, featuring cinematic atmosphere, clouds, stars, and real-time lighting.",
+  "name": "BoxNewsBooster Comic Globe",
+  "description": "A premium, high-fidelity 3D interactive Earth globe designed for BoxNewsBooster, wrapped in a hand-drawn comic-book cast instead of a map, featuring cinematic atmosphere, clouds, stars, and real-time lighting.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

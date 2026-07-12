@@ -98,7 +98,7 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
   ctx.textAlign = "left";
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 21px 'Inter', sans-serif";
-  const channelName = type === "news" ? "NNSENSE NEWS" : type === "live" ? "NNSENSE LIVE" : "NNSENSE SPORT";
+  const channelName = type === "news" ? "BOXNEWS NEWS" : type === "live" ? "BOXNEWS LIVE" : "BOXNEWS SPORT";
   ctx.fillText(channelName, 105, 31);
 
   // Channel Frequency / Tech metadata

@@ -113,7 +113,7 @@ export default function BroadcastOverlay() {
           </div>
           <div>
             <h1 className="text-sm font-display font-bold tracking-wider uppercase text-white/95">
-              Nn<span className="text-emerald-400 font-normal">Sense</span>
+              Box<span className="text-emerald-400 font-normal">NewsBooster</span>
             </h1>
             <p className="text-[10px] text-white/40 tracking-widest uppercase font-mono">
               Comic Broadcast Universe
