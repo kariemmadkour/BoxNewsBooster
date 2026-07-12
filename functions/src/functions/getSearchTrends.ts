@@ -13,7 +13,7 @@ export const getSearchTrends = onCall(
   {
     region: "us-central1",
     maxInstances: 10,
-    enforceAppCheck: true,
+    // TEMP: enforceAppCheck disabled -- see fetchNews.ts for why.
   },
   async (request) => {
     const { country } = validateTrendsInput(request.data);

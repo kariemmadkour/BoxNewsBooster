@@ -14,7 +14,8 @@ interface GetTrendingInput {
 // application code rather than an orderBy query -- see docs/database-schema.md
 // and lib/articleStore.ts#getRecentArticlesForTrending for why.
 export const getTrending = onCall(
-  { region: "us-central1", maxInstances: 10, enforceAppCheck: true },
+  // TEMP: enforceAppCheck disabled -- see fetchNews.ts for why.
+  { region: "us-central1", maxInstances: 10 },
   async (request) => {
     const input = (request.data ?? {}) as GetTrendingInput;
     const windowHours = Math.min(Math.max(input.windowHours ?? DEFAULT_WINDOW_HOURS, 1), 24 * 7);

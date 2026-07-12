@@ -6,7 +6,8 @@ interface GetClusterDetailInput {
 }
 
 export const getClusterDetail = onCall(
-  { region: "us-central1", maxInstances: 10, enforceAppCheck: true },
+  // TEMP: enforceAppCheck disabled -- see fetchNews.ts for why.
+  { region: "us-central1", maxInstances: 10 },
   async (request) => {
     const { clusterId } = (request.data ?? {}) as GetClusterDetailInput;
     if (!clusterId || typeof clusterId !== "string") {

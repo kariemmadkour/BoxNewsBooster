@@ -13,7 +13,7 @@ export const classifyArticle = onCall(
     region: "us-central1",
     secrets: [ANTHROPIC_API_KEY],
     maxInstances: 10,
-    enforceAppCheck: true,
+    // TEMP: enforceAppCheck disabled -- see fetchNews.ts for why.
   },
   async (request) => {
     const { title, summary } = validateClassifyInput(request.data);
