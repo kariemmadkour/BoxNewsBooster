@@ -104,3 +104,46 @@ export interface GetClusterDetailResult {
   cluster: ClusterInfo;
   articles: IntelligenceArticle[];
 }
+
+// Mirrors functions/src/functions/fetchAllNews.ts. AllProviderName is the
+// literal, exhaustive list of keys in functions/src/providers/index.ts's
+// PROVIDERS map (newsapi, gnews, googlenewsrss) -- keep in sync with that
+// file, not just with NewsProviderName above (which only covers the two
+// providers usable without a keyword from /trends's UI).
+export type AllProviderName = "newsapi" | "gnews" | "googlenewsrss";
+
+export type ProviderCallStatus = "success" | "empty" | "error" | "skipped";
+
+export interface ProviderResult {
+  provider: AllProviderName;
+  status: ProviderCallStatus;
+  articleCount: number;
+  cached: boolean;
+  error?: string;
+  skipReason?: string;
+}
+
+export interface MergedArticle {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  urlToImage: string | null;
+  sourceName: string;
+  publishedAt: string;
+  provider: AllProviderName;
+  customCategory: string;
+  country: string;
+  category: string;
+}
+
+export interface FetchAllNewsParams {
+  country?: string;
+  category?: string;
+  keyword?: string;
+}
+
+export interface FetchAllNewsResult {
+  articles: MergedArticle[];
+  providerResults: ProviderResult[];
+}

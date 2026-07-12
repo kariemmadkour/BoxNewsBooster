@@ -3,6 +3,7 @@ import { initializeApp } from "firebase-admin/app";
 initializeApp();
 
 export { fetchNews } from "./functions/fetchNews";
+export { fetchAllNews } from "./functions/fetchAllNews";
 export { classifyArticle } from "./functions/classifyArticle";
 export { getSearchTrends } from "./functions/getSearchTrends";
 

@@ -7,6 +7,8 @@ import {
   GetTrendingParams,
   GetTrendingResult,
   GetClusterDetailResult,
+  FetchAllNewsParams,
+  FetchAllNewsResult,
 } from "./types";
 
 export class ClientApiError extends Error {
@@ -72,6 +74,17 @@ export async function callGetTrending(params: GetTrendingParams = {}): Promise<G
 export async function callGetClusterDetail(clusterId: string): Promise<GetClusterDetailResult> {
   try {
     const result = await getClusterDetailCallable({ clusterId });
+    return result.data;
+  } catch (error) {
+    throw normalizeError(error);
+  }
+}
+
+const fetchAllNewsCallable = httpsCallable<FetchAllNewsParams, FetchAllNewsResult>(functions, "fetchAllNews");
+
+export async function callFetchAllNews(params: FetchAllNewsParams = {}): Promise<FetchAllNewsResult> {
+  try {
+    const result = await fetchAllNewsCallable(params);
     return result.data;
   } catch (error) {
     throw normalizeError(error);

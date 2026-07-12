@@ -68,6 +68,42 @@ export function validateClassifyInput(input: unknown): ValidatedClassifyInput {
   return { title, summary };
 }
 
+export interface ValidatedFetchAllNewsInput {
+  country: string;
+  category: NativeCategory;
+  keyword: string | null;
+}
+
+// No `provider`/`page` fields -- fetchAllNews calls every registered
+// provider in a single request and does not paginate (see
+// functions/fetchAllNews.ts).
+export function validateFetchAllNewsInput(input: unknown): ValidatedFetchAllNewsInput {
+  const data = (input ?? {}) as Record<string, unknown>;
+
+  const country =
+    typeof data.country === "string" && ISO_COUNTRY_CODES.includes(data.country.toLowerCase())
+      ? data.country.toLowerCase()
+      : "us";
+
+  const category =
+    typeof data.category === "string" && isNativeCategory(data.category)
+      ? data.category
+      : "general";
+
+  let keyword: string | null = null;
+  if (typeof data.keyword === "string") {
+    const trimmed = data.keyword.trim();
+    if (trimmed.length > 0) {
+      if (trimmed.length > MAX_KEYWORD_LENGTH) {
+        throw new HttpsError("invalid-argument", `keyword must be <= ${MAX_KEYWORD_LENGTH} chars`);
+      }
+      keyword = trimmed;
+    }
+  }
+
+  return { country, category, keyword };
+}
+
 export interface ValidatedTrendsInput {
   country: string;
 }

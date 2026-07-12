@@ -1,14 +1,7 @@
 import { onCall } from "firebase-functions/v2/https";
 import { ANTHROPIC_API_KEY, GNEWS_API_KEY, NEWS_API_KEY } from "../config/secrets";
-import { classifyArticleInternal } from "../lib/classify";
-import { getCachedClassification, getCachedQuery, setCachedClassification, setCachedQuery } from "../lib/cache";
-import { getProvider } from "../providers";
-import { NormalizedArticle } from "../types/article";
-import { mapWithConcurrency } from "../utils/concurrency";
-import { hashQuery, hashUrl } from "../utils/hash";
+import { fetchAndClassifyForProvider } from "../lib/newsFetchOrchestrator";
 import { validateFetchNewsInput } from "../utils/validation";
-
-const CLASSIFY_CONCURRENCY = 4;
 
 export const fetchNews = onCall(
   {
@@ -22,23 +15,10 @@ export const fetchNews = onCall(
   },
   async (request) => {
     const input = validateFetchNewsInput(request.data);
-    const queryHash = hashQuery({
-      provider: input.provider,
-      country: input.country,
-      category: input.category,
-      keyword: input.keyword ?? "",
-      page: input.page,
-    });
-
-    const cached = await getCachedQuery(queryHash);
-    if (cached) {
-      return { articles: cached, provider: input.provider, cached: true };
-    }
-
-    const provider = getProvider(input.provider);
     const apiKey = input.provider === "gnews" ? GNEWS_API_KEY.value() : NEWS_API_KEY.value();
 
-    const rawArticles = await provider.fetch({
+    const { articles, cached } = await fetchAndClassifyForProvider({
+      provider: input.provider,
       country: input.country,
       category: input.category,
       keyword: input.keyword,
@@ -47,40 +27,6 @@ export const fetchNews = onCall(
       apiKey,
     });
 
-    const articles: NormalizedArticle[] = await mapWithConcurrency(
-      rawArticles,
-      CLASSIFY_CONCURRENCY,
-      async (raw) => {
-        const articleHash = hashUrl(raw.url);
-        const existing = await getCachedClassification(articleHash);
-        if (existing) {
-          return {
-            ...raw,
-            id: articleHash,
-            provider: input.provider,
-            customCategory: existing.customCategory,
-          };
-        }
-
-        const { category, model } = await classifyArticleInternal(
-          raw.title,
-          raw.description ?? "",
-          ANTHROPIC_API_KEY.value()
-        );
-        await setCachedClassification(articleHash, {
-          url: raw.url,
-          title: raw.title,
-          summary: raw.description ?? "",
-          customCategory: category,
-          model,
-        });
-
-        return { ...raw, id: articleHash, provider: input.provider, customCategory: category };
-      }
-    );
-
-    await setCachedQuery(queryHash, articles);
-
-    return { articles, provider: input.provider, cached: false };
+    return { articles, provider: input.provider, cached };
   }
 );
