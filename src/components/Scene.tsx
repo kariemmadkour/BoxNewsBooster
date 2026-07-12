@@ -7,21 +7,22 @@ import Earth from "./Earth";
 import Atmosphere from "./Atmosphere";
 import Starfield from "./Starfield";
 import OrbitingPanels from "./OrbitingPanels";
+import OrbitingComicLayer from "./OrbitingComicLayer";
 
 export default function Scene() {
   const controlsRef = useRef<any>(null);
 
-  // Beautiful Studio spotlight direction
+  // Studio spotlight direction, warmed toward the gold accent
   const sunDirection = useMemo(() => new THREE.Vector3(-6.0, 3.5, 5.0).normalize(), []);
 
-  // Primary studio lamp color (crisp neutral white to render the colored countries accurately)
-  const sunColor = "#ffffff";
+  // Primary studio lamp — warm gold, to catch the ink sphere's emissive gold linework
+  const sunColor = "#f5e0a8";
 
-  // Ambient fill light to ensure all country details are clearly visible from all angles
-  const ambientColor = "#d6e6ff";
+  // Ambient fill — subtle cyan holographic tint
+  const ambientColor = "#1a2a4a";
 
-  // Galactic rim light (soft cool blue backlight for professional 3D volume mapping)
-  const backlightColor = "#1e2d3d";
+  // Galactic rim light (deep navy backlight for volume against the void)
+  const backlightColor = "#07111f";
   const backlightDirection = useMemo(() => sunDirection.clone().multiplyScalar(-1), [sunDirection]);
 
   return (
@@ -35,19 +36,19 @@ export default function Scene() {
           alpha: false,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.35, // Bright, rich exposure for classroom globe colors
+          toneMappingExposure: 1.15, // Moodier exposure to let the gold ink and holographic glow pop
         }}
       >
-        {/* Elegant deep space backdrop */}
-        <color attach="background" args={["#040712"]} />
+        {/* Dark navy / midnight void backdrop */}
+        <color attach="background" args={["#07111F"]} />
 
-        {/* 1. Starfield background */}
+        {/* 1. Ink-splash particle field */}
         <Starfield count={2200} minRadius={150} maxRadius={350} />
 
-        {/* 2. Primary Studio Directional Spotlight (projects glossy reflections and reflections of country text) */}
+        {/* 2. Primary Studio Directional Spotlight (warm gold key light) */}
         <directionalLight
           position={[sunDirection.x * 12, sunDirection.y * 12, sunDirection.z * 12]}
-          intensity={4.8}
+          intensity={4.2}
           color={sunColor}
           castShadow
           shadow-mapSize={[2048, 2048]}
@@ -61,23 +62,26 @@ export default function Scene() {
           color={backlightColor}
         />
 
-        {/* 4. Rich Ambient Light so the details on all sides of the political globe are fully readable */}
-        <ambientLight intensity={0.55} color={ambientColor} />
+        {/* 4. Ambient fill — subtle cyan holographic tint */}
+        <ambientLight intensity={0.5} color={ambientColor} />
 
-        {/* 5. Dual side point lights for realistic orbital specular glints & glossy refraction highlights */}
-        <pointLight position={[-6, 4, -4]} intensity={2.5} color="#ec4899" />
-        <pointLight position={[6, -4, 4]} intensity={3.5} color="#3b82f6" />
+        {/* 5. Dual side point lights — gold + cyan holographic accent glints */}
+        <pointLight position={[-6, 4, -4]} intensity={2.2} color="#D4AF37" />
+        <pointLight position={[6, -4, 4]} intensity={2.8} color="#4fd8ff" />
 
-        {/* 6. The core 3D Earth & Acrylic Casing Group */}
+        {/* 6. The Comic Intelligence Sphere & its holographic aura */}
         {/* Inclined at Earth's realistic axial tilt of ~23.5 degrees (0.41 radians) */}
         <group rotation={[0, 0, 0.41]}>
           <Earth radius={2.0} sunDirection={sunDirection} />
-          {/* Subtle glossy glass highlight ring around the sphere */}
-          <Atmosphere radius={2.03} color="#9ec2ff" sunDirection={sunDirection} />
+          {/* Subtle cyan-to-gold holographic Fresnel rim */}
+          <Atmosphere radius={2.03} color="#4fd8ff" sunDirection={sunDirection} />
         </group>
 
-        {/* Organized orbiting glass panels (News, Live & Sport) positioned dynamically in camera-local space */}
+        {/* Interactive orbiting glass channel cards (News, Live & Sport) */}
         <OrbitingPanels orbitRadius={3.35} controlsRef={controlsRef} />
+
+        {/* Decorative outer layers: comic frames, speech bubbles, data ribbons, glowing typography */}
+        <OrbitingComicLayer />
 
         {/* 7. Smooth Cinematic Orbit Controls */}
         <OrbitControls
@@ -91,12 +95,12 @@ export default function Scene() {
           autoRotate={false} // Auto-rotation is elegantly managed inside the Earth component
         />
 
-        {/* 8. Premium Post-Processing Bloom for glossy lens shine */}
+        {/* 8. Bloom tuned for gold emissive ink + holographic glow */}
         <EffectComposer>
           <Bloom
-            intensity={1.5}
-            luminanceThreshold={0.55}
-            luminanceSmoothing={0.8}
+            intensity={1.9}
+            luminanceThreshold={0.32}
+            luminanceSmoothing={0.75}
             mipmapBlur
           />
         </EffectComposer>

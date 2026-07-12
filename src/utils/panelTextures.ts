@@ -14,22 +14,22 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
   }
 
   // 1. Draw Glass Backdrop with translucent glass effect
-  // We want a dark frosted glass look with a matching glow theme
-  let accentColor = "#ff3366"; // default pink/red
-  let secondaryColor = "#9e00ff";
+  // Monochrome navy + gold/cyan comic-card theme (matches the Comic Intelligence Sphere)
+  let accentColor = "#D4AF37"; // gold
+  let secondaryColor = "#4fd8ff"; // subtle cyan holographic highlight
   if (type === "news") {
-    accentColor = "#dc2626"; // deep red
-    secondaryColor = "#eab308"; // warm gold
+    accentColor = "#D4AF37"; // gold
+    secondaryColor = "#f5ecd8"; // warm white ink
   } else if (type === "live") {
-    accentColor = "#ec4899"; // bright magenta
-    secondaryColor = "#3b82f6"; // electric blue
+    accentColor = "#4fd8ff"; // cyan
+    secondaryColor = "#D4AF37"; // gold
   } else if (type === "sport") {
-    accentColor = "#22c55e"; // soccer field green
-    secondaryColor = "#06b6d4"; // cyan
+    accentColor = "#D4AF37"; // gold
+    secondaryColor = "#4fd8ff"; // cyan
   }
 
-  // Base frosted glass color
-  ctx.fillStyle = "rgba(10, 16, 32, 0.72)";
+  // Base frosted glass color — dark navy
+  ctx.fillStyle = "rgba(7, 17, 31, 0.78)";
   ctx.fillRect(0, 0, width, height);
 
   // Soft internal radial color glow to mimic embedded screen lights
@@ -98,7 +98,7 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
   ctx.textAlign = "left";
   ctx.fillStyle = "#ffffff";
   ctx.font = "900 21px 'Inter', sans-serif";
-  const channelName = type === "news" ? "BOX NEWS" : type === "live" ? "BOX LIVE" : "BOX SPORT";
+  const channelName = type === "news" ? "NNSENSE NEWS" : type === "live" ? "NNSENSE LIVE" : "NNSENSE SPORT";
   ctx.fillText(channelName, 105, 31);
 
   // Channel Frequency / Tech metadata
@@ -130,8 +130,8 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
 
   // Let's paint custom abstract graphics based on channel type!
   if (type === "news") {
-    // Elegant globe contours or digital tech grids
-    ctx.strokeStyle = `${accentColor}33`; // soft red
+    // Elegant sphere contours / digital tech grids
+    ctx.strokeStyle = `${accentColor}33`; // soft gold
     ctx.lineWidth = 1.5;
     for (let r = 20; r < 200; r += 24) {
       ctx.beginPath();
@@ -210,12 +210,12 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
     ctx.fillText("EASTERN HEMISPHERE LIVE STREAM", tx + 16, ty + 24);
 
   } else if (type === "sport") {
-    // Bright diagonal chevrons or stadium floodlight flares
-    ctx.fillStyle = "rgba(10, 28, 16, 0.7)";
+    // Bright diagonal chevrons and stadium floodlight flares
+    ctx.fillStyle = "rgba(7, 17, 31, 0.7)";
     ctx.fillRect(tx, ty, tw, th);
 
-    // Draw green stadium line rings
-    ctx.strokeStyle = "rgba(34, 197, 94, 0.3)";
+    // Stadium line rings in gold
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.3)";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(tx + tw / 2, ty + th, 120, Math.PI, 0);
@@ -231,7 +231,7 @@ export function createPanelTexture(type: "news" | "live" | "sport"): THREE.Textu
     ctx.stroke();
 
     // Abstract sports motion vectors (glowing chevrons)
-    ctx.strokeStyle = "rgba(6, 182, 212, 0.6)"; // Cyan
+    ctx.strokeStyle = "rgba(79, 216, 255, 0.6)"; // Cyan
     ctx.lineWidth = 4;
     for (let cx = tx + 30; cx < tx + tw; cx += 120) {
       ctx.beginPath();

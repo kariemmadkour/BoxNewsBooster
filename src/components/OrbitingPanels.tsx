@@ -376,9 +376,9 @@ export default function OrbitingPanels({ orbitRadius = 3.35, controlsRef }: Orbi
 
   // Package the details for each of the three channels
   const channels = [
-    { type: "news" as const, texture: textures.news, glowColor: "#ff3366" },
-    { type: "live" as const, texture: textures.live, glowColor: "#ec4899" },
-    { type: "sport" as const, texture: textures.sport, glowColor: "#22c55e" },
+    { type: "news" as const, texture: textures.news, glowColor: "#D4AF37" },
+    { type: "live" as const, texture: textures.live, glowColor: "#4fd8ff" },
+    { type: "sport" as const, texture: textures.sport, glowColor: "#D4AF37" },
   ];
 
   return (
@@ -429,7 +429,7 @@ export default function OrbitingPanels({ orbitRadius = 3.35, controlsRef }: Orbi
               clearcoatRoughness={0.02}
               ior={1.5} // standard heavy glass refractive index
               sheen={0.3}
-              sheenColor={new THREE.Color("#ffffff")}
+              sheenColor={new THREE.Color("#4fd8ff")}
             />
           </mesh>
 

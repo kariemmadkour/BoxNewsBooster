@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, RotateCcw, Globe2, Sparkles, Newspaper, Video, Trophy, X, ArrowUpRight, Play, Volume2, VolumeX } from "lucide-react";
+import { Search, RotateCcw, Globe2, Sparkles, Newspaper, Video, Trophy, TrendingUp, X, ArrowUpRight, Play, Volume2, VolumeX } from "lucide-react";
 
 // Curated list of mock broadcast items for premium search filtering
 const SEARCH_ITEMS = [
@@ -58,6 +59,7 @@ const TICKER_STATEMENTS = [
 ];
 
 export default function BroadcastOverlay() {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -111,10 +113,10 @@ export default function BroadcastOverlay() {
           </div>
           <div>
             <h1 className="text-sm font-display font-bold tracking-wider uppercase text-white/95">
-              GlobeCast <span className="text-emerald-400 font-normal">OS</span>
+              Nn<span className="text-emerald-400 font-normal">Sense</span>
             </h1>
             <p className="text-[10px] text-white/40 tracking-widest uppercase font-mono">
-              Orbital Broadcast System
+              Comic Broadcast Universe
             </p>
           </div>
         </div>
@@ -153,6 +155,13 @@ export default function BroadcastOverlay() {
           >
             <Trophy className="w-3.5 h-3.5" />
             Sports
+          </button>
+          <button
+            onClick={() => navigate("/trends")}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 text-white/60 hover:text-white hover:bg-white/5"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            Trends
           </button>
         </nav>
 

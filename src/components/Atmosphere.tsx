@@ -17,27 +17,30 @@ const atmosphereVertexShader = `
 const atmosphereFragmentShader = `
   uniform vec3 uAtmosphereColor;
   uniform vec3 uSunDirection;
+  uniform float uTime;
   varying vec3 vWorldNormal;
   varying vec3 vViewDir;
 
   void main() {
     vec3 normal = normalize(vWorldNormal);
     vec3 viewDir = normalize(vViewDir);
-    
-    // Smooth Fresnel effect to create a gorgeous glass-rim edge highlight
-    // Represents light refracting on the outer protective plastic casing
+
+    // Smooth Fresnel effect to create a holographic rim-light edge
     float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 5.0);
-    
+
     // Light influence from the primary studio lamp
     float sunInfluence = max(dot(normal, normalize(uSunDirection)), 0.0);
     float scattering = smoothstep(-0.2, 0.5, dot(normal, normalize(uSunDirection)));
-    
-    // Soft blend of ambient cool rim light with golden sunset sheen at the grazing angle
-    vec3 edgeColor = mix(uAtmosphereColor, vec3(1.0, 0.75, 0.45), sunInfluence * 0.4);
-    
+
+    // Soft blend of subtle cyan holographic base with a gold sheen at the grazing sun-facing angle
+    vec3 edgeColor = mix(uAtmosphereColor, vec3(0.831, 0.686, 0.216), sunInfluence * 0.55);
+
+    // Slow-drifting holographic scanline bands for a "living AI object" shimmer
+    float scan = 0.85 + 0.15 * sin(vWorldNormal.y * 26.0 + uTime * 1.1);
+
     // Total alpha intensity for the outer rim shine
-    float alpha = fresnel * (scattering * 0.8 + 0.2) * 0.7;
-    
+    float alpha = fresnel * (scattering * 0.8 + 0.2) * 0.75 * scan;
+
     gl_FragColor = vec4(edgeColor * 1.8, alpha);
   }
 `;
@@ -50,14 +53,15 @@ interface AtmosphereProps {
 
 export default function Atmosphere({
   radius = 2.02,
-  color = "#a3cfff", // Soft clear sky/glass glow
+  color = "#4fd8ff", // Subtle cyan holographic base glow
   sunDirection,
 }: AtmosphereProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  useFrame(() => {
+  useFrame((state) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uSunDirection.value.copy(sunDirection);
+      materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
     }
   });
 
@@ -71,6 +75,7 @@ export default function Atmosphere({
         uniforms={{
           uAtmosphereColor: { value: new THREE.Color(color) },
           uSunDirection: { value: sunDirection.clone() },
+          uTime: { value: 0 },
         }}
         transparent
         blending={THREE.AdditiveBlending}
