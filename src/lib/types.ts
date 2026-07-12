@@ -114,15 +114,6 @@ export type AllProviderName = "newsapi" | "gnews" | "googlenewsrss";
 
 export type ProviderCallStatus = "success" | "empty" | "error" | "skipped";
 
-export interface ProviderResult {
-  provider: AllProviderName;
-  status: ProviderCallStatus;
-  articleCount: number;
-  cached: boolean;
-  error?: string;
-  skipReason?: string;
-}
-
 export interface MergedArticle {
   id: string;
   title: string;
@@ -135,6 +126,19 @@ export interface MergedArticle {
   customCategory: string;
   country: string;
   category: string;
+}
+
+export interface ProviderResult {
+  provider: AllProviderName;
+  status: ProviderCallStatus;
+  articleCount: number;
+  cached: boolean;
+  error?: string;
+  skipReason?: string;
+  // This provider's own articles, before cross-provider dedup -- see
+  // functions/src/functions/fetchAllNews.ts for why this must be separate
+  // from the top-level merged `articles` list.
+  articles: MergedArticle[];
 }
 
 export interface FetchAllNewsParams {

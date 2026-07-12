@@ -2,13 +2,15 @@ import { onCall } from "firebase-functions/v2/https";
 import { ANTHROPIC_API_KEY, GNEWS_API_KEY, NEWS_API_KEY } from "../config/secrets";
 import { fetchAndClassifyForProvider } from "../lib/newsFetchOrchestrator";
 import { validateFetchAllNewsInput } from "../utils/validation";
-import { NewsProviderName, NormalizedArticle } from "../types/article";
+import { NewsProviderName } from "../types/article";
 
 // Literal, exhaustive mirror of the keys in providers/index.ts's PROVIDERS
 // map (newsapi, gnews, googlenewsrss). Kept as an explicit list rather than
-// derived at runtime so this file, the debug panel, and providers/index.ts
-// can all be diffed against each other directly. If a provider is ever
-// added to or removed from providers/index.ts, update this list too.
+// derived at runtime so this file and providers/index.ts can be diffed
+// against each other directly. The dashboard's per-provider tabs are
+// generated from providerResults below (not a separate hardcoded list), so
+// adding a key here is the *only* place that needs to change for a new
+// provider to automatically get a tab.
 const ALL_PROVIDER_NAMES: NewsProviderName[] = ["newsapi", "gnews", "googlenewsrss"];
 
 // Providers whose real implementation only makes sense against a
@@ -20,6 +22,20 @@ const KEYWORD_REQUIRED_PROVIDERS: NewsProviderName[] = ["googlenewsrss"];
 
 export type ProviderCallStatus = "success" | "empty" | "error" | "skipped";
 
+export interface MergedArticle {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  urlToImage: string | null;
+  sourceName: string;
+  publishedAt: string;
+  provider: NewsProviderName;
+  customCategory: string;
+  country: string;
+  category: string;
+}
+
 export interface ProviderResult {
   provider: NewsProviderName;
   status: ProviderCallStatus;
@@ -27,11 +43,12 @@ export interface ProviderResult {
   cached: boolean;
   error?: string;
   skipReason?: string;
-}
-
-export interface MergedArticle extends NormalizedArticle {
-  country: string;
-  category: string;
+  // This provider's own articles, before cross-provider dedup -- NOT the
+  // same list as the top-level `articles` field (which is merged and
+  // deduped across all providers). Per-provider consumers (e.g. dashboard
+  // tabs) must read from here to see what this provider actually
+  // returned, unaffected by another provider having returned the same URL.
+  articles: MergedArticle[];
 }
 
 function apiKeyFor(provider: NewsProviderName): string {
@@ -57,17 +74,17 @@ export const fetchAllNews = onCall(
 
     // Every provider in ALL_PROVIDER_NAMES gets an entry in the output --
     // called, skipped, empty, or errored -- never silently omitted.
-    const perProvider = await Promise.all(
-      ALL_PROVIDER_NAMES.map(async (provider) => {
+    const providerResults: ProviderResult[] = await Promise.all(
+      ALL_PROVIDER_NAMES.map(async (provider): Promise<ProviderResult> => {
         if (KEYWORD_REQUIRED_PROVIDERS.includes(provider) && !input.keyword) {
-          const result: ProviderResult = {
+          return {
             provider,
             status: "skipped",
             articleCount: 0,
             cached: false,
             skipReason: "requires a keyword, none was supplied",
+            articles: [],
           };
-          return { result, articles: [] as NormalizedArticle[] };
         }
 
         try {
@@ -81,35 +98,39 @@ export const fetchAllNews = onCall(
             apiKey: apiKeyFor(provider),
           });
 
-          const result: ProviderResult = {
+          const tagged: MergedArticle[] = articles.map((article) => ({
+            ...article,
+            country: input.country,
+            category: input.category,
+          }));
+
+          return {
             provider,
-            status: articles.length > 0 ? "success" : "empty",
-            articleCount: articles.length,
+            status: tagged.length > 0 ? "success" : "empty",
+            articleCount: tagged.length,
             cached,
+            articles: tagged,
           };
-          return { result, articles };
         } catch (error) {
-          const result: ProviderResult = {
+          return {
             provider,
             status: "error",
             articleCount: 0,
             cached: false,
             error: error instanceof Error ? error.message : String(error),
+            articles: [],
           };
-          return { result, articles: [] as NormalizedArticle[] };
         }
       })
     );
 
-    const providerResults: ProviderResult[] = perProvider.map((p) => p.result);
-
     // Dedupe by article.id (== hashUrl(url)) across all providers' results,
-    // keeping the first occurrence.
+    // keeping the first occurrence, for the merged "All sources" view.
     const merged = new Map<string, MergedArticle>();
-    for (const { articles } of perProvider) {
+    for (const { articles } of providerResults) {
       for (const article of articles) {
         if (!merged.has(article.id)) {
-          merged.set(article.id, { ...article, country: input.country, category: input.category });
+          merged.set(article.id, article);
         }
       }
     }
