@@ -37,9 +37,13 @@ export async function fetchSearchTrends(countryCode: string): Promise<TrendItem[
       );
     } catch (error) {
       lastError = error;
-      const message = error instanceof Error ? error.message : String(error);
-      const stack = error instanceof Error ? error.stack : undefined;
-      logger.warn(`Google Trends fetch failed (attempt ${attempt + 1})`, { countryCode, message, stack });
+      // errorDetail/errorStack, not message/stack -- Firebase's structured
+      // logger has its own top-level "message" field (the first arg here),
+      // and a same-named field on the metadata object gets silently
+      // shadowed in the printed JSON instead of showing the real error.
+      const errorDetail = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      logger.warn(`Google Trends fetch failed (attempt ${attempt + 1})`, { countryCode, errorDetail, errorStack });
       if (attempt < MAX_RETRIES) await sleep(RETRY_DELAY_MS * (attempt + 1));
     }
   }
