@@ -1,4 +1,5 @@
 import { HttpsError } from "firebase-functions/v2/https";
+import { logger } from "firebase-functions/v2";
 import { RawProviderArticle } from "../types/article";
 import { FetchParams, NewsProvider } from "./newsProvider";
 
@@ -19,6 +20,7 @@ interface NewsApiOrgResponse {
   status: string;
   articles?: NewsApiOrgArticle[];
   message?: string;
+  totalResults?: number;
 }
 
 export const newsApiOrgProvider: NewsProvider = {
@@ -46,6 +48,17 @@ export const newsApiOrgProvider: NewsProvider = {
     if (!response.ok || data.status !== "ok") {
       throw new HttpsError("unavailable", data.message ?? "NewsAPI.org request failed");
     }
+
+    logger.info("newsApiOrgProvider response", {
+      httpStatus: response.status,
+      apiStatus: data.status,
+      totalResults: data.totalResults,
+      articlesReturned: data.articles?.length ?? 0,
+      requestUrl: url.toString(),
+      country,
+      category,
+      endpoint,
+    });
 
     return (data.articles ?? []).map((a) => ({
       title: a.title,
