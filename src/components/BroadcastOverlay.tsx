@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, RotateCcw, Globe2, Sparkles, Newspaper, Video, Trophy, TrendingUp, X, ArrowUpRight, Play, Volume2, VolumeX } from "lucide-react";
+import { Search, RotateCcw, Globe2, Sparkles, Newspaper, Video, Trophy, TrendingUp, BrainCircuit, X, ArrowUpRight, Play, Volume2, VolumeX } from "lucide-react";
 
 // Curated list of mock broadcast items for premium search filtering
 const SEARCH_ITEMS = [
@@ -162,6 +162,13 @@ export default function BroadcastOverlay() {
           >
             <TrendingUp className="w-3.5 h-3.5" />
             Trends
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 text-white/60 hover:text-white hover:bg-white/5"
+          >
+            <BrainCircuit className="w-3.5 h-3.5" />
+            Intelligence
           </button>
         </nav>
 

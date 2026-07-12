@@ -13,6 +13,7 @@ export const getSearchTrends = onCall(
   {
     region: "us-central1",
     maxInstances: 10,
+    enforceAppCheck: true,
   },
   async (request) => {
     const { country } = validateTrendsInput(request.data);

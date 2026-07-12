@@ -1,6 +1,13 @@
 import { httpsCallable, FunctionsError } from "firebase/functions";
 import { functions } from "../firebase";
-import { FetchNewsParams, FetchNewsResult, SearchTrendsResult } from "./types";
+import {
+  FetchNewsParams,
+  FetchNewsResult,
+  SearchTrendsResult,
+  GetTrendingParams,
+  GetTrendingResult,
+  GetClusterDetailResult,
+} from "./types";
 
 export class ClientApiError extends Error {
   constructor(public code: string, message: string) {
@@ -41,6 +48,30 @@ export async function callFetchNews(params: FetchNewsParams): Promise<FetchNewsR
 export async function callGetSearchTrends(country: string): Promise<SearchTrendsResult> {
   try {
     const result = await getSearchTrendsCallable({ country });
+    return result.data;
+  } catch (error) {
+    throw normalizeError(error);
+  }
+}
+
+const getTrendingCallable = httpsCallable<GetTrendingParams, GetTrendingResult>(functions, "getTrending");
+const getClusterDetailCallable = httpsCallable<{ clusterId: string }, GetClusterDetailResult>(
+  functions,
+  "getClusterDetail"
+);
+
+export async function callGetTrending(params: GetTrendingParams = {}): Promise<GetTrendingResult> {
+  try {
+    const result = await getTrendingCallable(params);
+    return result.data;
+  } catch (error) {
+    throw normalizeError(error);
+  }
+}
+
+export async function callGetClusterDetail(clusterId: string): Promise<GetClusterDetailResult> {
+  try {
+    const result = await getClusterDetailCallable({ clusterId });
     return result.data;
   } catch (error) {
     throw normalizeError(error);

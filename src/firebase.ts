@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getFunctions } from "firebase/functions";
 
 // Public client config -- safe to ship in the built bundle. All actual
@@ -15,13 +16,13 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app, import.meta.env.VITE_FUNCTIONS_REGION || "us-central1");
 
-// Hook point for Firebase App Check (reCAPTCHA v3), recommended as the
-// primary anti-abuse/cost-control lever since there's no user auth to gate
-// callable functions on. Left disabled until VITE_RECAPTCHA_SITE_KEY is set.
-// import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
-// if (import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
-//   initializeAppCheck(app, {
-//     provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
-//     isTokenAutoRefreshEnabled: true,
-//   });
-// }
+// App Check (reCAPTCHA v3) -- the primary anti-abuse/cost-control lever
+// since there's no user auth gating the public callables. Required now
+// that Gemini/Vertex AI (Phase 3) adds a third uncapped cost surface on
+// top of Twitter/YouTube -- see docs/security-strategy.md.
+if (import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
