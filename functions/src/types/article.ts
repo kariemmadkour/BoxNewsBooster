@@ -1,6 +1,6 @@
 import type { CustomCategory } from "../config/taxonomy";
 
-export type NewsProviderName = "newsapi" | "gnews";
+export type NewsProviderName = "newsapi" | "gnews" | "googlenewsrss";
 
 export interface RawProviderArticle {
   title: string;
